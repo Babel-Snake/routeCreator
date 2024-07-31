@@ -1,0 +1,36 @@
+{
+  "middleware": [
+    {
+      "name": "authenticateJWT",
+      "description": "Verifies the JWT token in the request header",
+      "path": "src/middleware/auth.js"
+    },
+    {
+      "name": "validateInputs",
+      "description": "Validates and sanitizes input data",
+      "path": "src/middleware/inputValidation.js"
+    },
+    {
+      "name": "checkUserRole",
+      "description": "Checks if the user has the required role for the action",
+      "path": "src/middleware/roleCheck.js"
+    }
+  ],
+  "utils": [
+    {
+      "name": "logger",
+      "description": "Provides logging functionality",
+      "path": "src/utils/logger.js"
+    },
+    {
+      "name": "errorHandler",
+      "description": "Centralized error handling utility",
+      "path": "src/utils/errorHandler.js"
+    },
+    {
+      "name": "dbConnection",
+      "description": "Manages database connections",
+      "path": "src/utils/dbConnection.js"
+    }
+  ]
+}

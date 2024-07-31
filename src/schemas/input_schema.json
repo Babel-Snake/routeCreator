@@ -1,0 +1,45 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["route_details", "logical_steps"],
+    "properties": {
+      "route_details": {
+        "type": "object",
+        "required": ["path", "method", "description"],
+        "properties": {
+          "path": {"type": "string"},
+          "method": {"type": "string", "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"]},
+          "description": {"type": "string"}
+        }
+      },
+      "logical_steps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["step", "description"],
+          "properties": {
+            "step": {"type": "string"},
+            "description": {"type": "string"}
+          }
+        }
+      },
+      "input": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "type"],
+          "properties": {
+            "name": {"type": "string"},
+            "type": {"type": "string"},
+            "description": {"type": "string"}
+          }
+        }
+      },
+      "middleware": {
+        "type": "array",
+        "items": {"type": "string"}
+      }
+    }
+  }
+}

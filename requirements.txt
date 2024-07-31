@@ -1,0 +1,15 @@
+langchain==0.2.7
+langchain-core==0.2.22
+openai==1.32.0
+anthropic
+transformers
+torch
+python-dotenv
+langchain-openai==0.1.17
+cerberus
+jsonschema
+pytest
+tiktoken>=0.7,<1
+aiohttp<4.0.0,>=3.8.3
+SQLAlchemy<3,>=1.4
+PyYAML>=5.3

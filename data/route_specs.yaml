@@ -1,0 +1,46 @@
+- route_details:
+    path: "/app/admin/mentor-register"
+    method: "POST"
+    description: "Create (Register) a new mentor"
+  file_names:
+    route: "mentorRegisterRoute.js"
+    controller: "mentorRegisterController.js"
+    service: "mentorRegisterService.js"
+  required_tables:
+    - users
+    - invitations
+  logical_steps:
+    - step: "Validate input"
+      description: "Ensure all required fields (Password, Username, Invitation Token) are present and valid"
+    - step: "Check for existing email"
+      description: "Ensure the email associated with the invitation is unique and not already registered"
+    - step: "Check invitation token"
+      description: "Verify that the invitation token is valid and corresponds to the provided email"
+    - step: "Create Firebase account"
+      description: "Create a Firebase account for the new mentor using the invite email and input password"
+    - step: "Create mentor entry"
+      description: "Insert a new admin entry into the database with the role 'mentor', assign learning_hub as per invite"
+    - step: "Mark invitation as used"
+      description: "Update the invitation entry in the database to mark it as used"
+    - step: "Send verification email"
+      description: "Optionally send a verification email to the newly registered mentor"
+  input:
+    - name: "username"
+      type: "string"
+      description: "Mentor's chosen username"
+    - name: "password"
+      type: "string"
+      description: "Mentor's chosen password"
+    - name: "invitation_token"
+      type: "string"
+      description: "Token received via invitation"
+  required_middleware:
+    - validateInputs.js
+    - checkUniqueEmail.js
+    - checkInvitationToken.js
+  required_utils:
+    - emailUtil
+    - firebaseUtils.js
+    - roleUtil
+    - assignHubUtil
+    - rateLimiter

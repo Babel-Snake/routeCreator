@@ -1,0 +1,388 @@
+{
+  "tables": {
+    "learning_hubs": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "name", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "address", "type": "text"},
+        {"name": "latitude", "type": "decimal", "precision": 10, "scale": 8},
+        {"name": "longitude", "type": "decimal", "precision": 11, "scale": 8},
+        {"name": "contact_email", "type": "varchar", "length": 255},
+        {"name": "contact_phone", "type": "varchar", "length": 255},
+        {"name": "logo_url", "type": "varchar", "length": 255},
+        {"name": "description", "type": "text"},
+        {"name": "website_url", "type": "varchar", "length": 255},
+        {"name": "operating_hours", "type": "text"},
+        {"name": "type", "type": "enum", "values": ["school", "tutoring_center", "community_center"]},
+        {"name": "facilities", "type": "text"},
+        {"name": "capacity", "type": "int"},
+        {"name": "region", "type": "varchar", "length": 255},
+        {"name": "is_subscribed", "type": "boolean", "default": false},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"},
+        {"name": "is_deleted", "type": "boolean", "default": false},
+        {"name": "deleted_at", "type": "timestamp"}
+      ]
+    },
+    "admin": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "firebase_uid", "type": "varchar", "length": 255, "unique": true, "not_null": true},
+        {"name": "email", "type": "varchar", "length": 255, "unique": true, "not_null": true},
+        {"name": "role", "type": "enum", "values": ["mentor", "admin", "hub_supervisor"], "not_null": true},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"},
+        {"name": "is_deleted", "type": "boolean", "default": false},
+        {"name": "deleted_at", "type": "timestamp"}
+      ]
+    },
+    "supervisor_hubs": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "admin_id", "type": "int", "not_null": true, "foreign_key": "admin.id", "on_delete": "CASCADE"},
+        {"name": "hub_id", "type": "int", "not_null": true, "foreign_key": "learning_hubs.id", "on_delete": "CASCADE"},
+        {"name": "start_date", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "end_date", "type": "timestamp"}
+      ]
+    },
+    "plans": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "name", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "description", "type": "text"},
+        {"name": "price", "type": "decimal", "precision": 10, "scale": 2, "not_null": true},
+        {"name": "duration_days", "type": "int", "not_null": true},
+        {"name": "max_students", "type": "int", "not_null": true},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "subscriptions": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "hub_id", "type": "int", "not_null": true, "foreign_key": "learning_hubs.id"},
+        {"name": "plan_id", "type": "int", "not_null": true, "foreign_key": "plans.id"},
+        {"name": "start_date", "type": "date", "not_null": true},
+        {"name": "end_date", "type": "date", "not_null": true},
+        {"name": "is_active", "type": "boolean", "default": true},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "payments": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "subscription_id", "type": "int", "not_null": true, "foreign_key": "subscriptions.id"},
+        {"name": "amount", "type": "decimal", "precision": 10, "scale": 2, "not_null": true},
+        {"name": "payment_date", "type": "date", "not_null": true},
+        {"name": "payment_method", "type": "enum", "values": ["credit_card", "paypal", "bank_transfer"], "not_null": true},
+        {"name": "transaction_id", "type": "varchar", "length": 255},
+        {"name": "status", "type": "enum", "values": ["pending", "completed", "failed"], "not_null": true},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "invitations": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "email", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "role", "type": "enum", "values": ["admin", "mentor"], "not_null": true},
+        {"name": "inviter_id", "type": "int", "not_null": true, "foreign_key": "admin.id"},
+        {"name": "token", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "expires_at", "type": "timestamp", "not_null": true},
+        {"name": "used", "type": "boolean", "default": false}
+      ]
+    },
+    "classes": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "name", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "description", "type": "text"},
+        {"name": "hub_id", "type": "int", "not_null": true, "foreign_key": "learning_hubs.id"},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "mentor_classes": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "mentor_id", "type": "int", "not_null": true, "foreign_key": "admin.id"},
+        {"name": "class_id", "type": "int", "not_null": true, "foreign_key": "classes.id"},
+        {"name": "start_date", "type": "date", "not_null": true},
+        {"name": "end_date", "type": "date"},
+        {"name": "student_capacity", "type": "int", "not_null": true}
+      ]
+    },
+    "grades": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "grade_level", "type": "varchar", "length": 255, "unique": true, "not_null": true},
+        {"name": "description", "type": "text"}
+      ]
+    },
+    "students": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "username", "type": "varchar", "length": 255, "unique": true, "not_null": true},
+        {"name": "firebase_uid", "type": "varchar", "length": 255, "unique": true, "not_null": true},
+        {"name": "first_name", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "last_name", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "date_of_birth", "type": "date", "not_null": true},
+        {"name": "enrollment_date", "type": "date", "not_null": true},
+        {"name": "hub_id", "type": "int", "not_null": true, "foreign_key": "learning_hubs.id"},
+        {"name": "grade", "type": "varchar", "length": 255, "not_null": true, "foreign_key": "grades.grade_level"},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "student_classes": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "class_id", "type": "int", "not_null": true, "foreign_key": "classes.id"},
+        {"name": "start_date", "type": "date", "not_null": true},
+        {"name": "end_date", "type": "date"}
+      ]
+    },
+    "curriculum": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "subject", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "description", "type": "text"},
+        {"name": "class_id", "type": "int", "foreign_key": "classes.id"}
+      ]
+    },
+    "curriculum_grade": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "curriculum_id", "type": "int", "not_null": true, "foreign_key": "curriculum.id"},
+        {"name": "grade_id", "type": "int", "not_null": true, "foreign_key": "grades.id"},
+        {"name": "class_id", "type": "int", "foreign_key": "classes.id"}
+      ]
+    },
+    "curriculum_topics": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "curriculum_id", "type": "int", "not_null": true, "foreign_key": "curriculum.id"},
+        {"name": "topic_name", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "description", "type": "text"},
+        {"name": "max_length", "type": "int", "not_null": true},
+        {"name": "class_id", "type": "int", "foreign_key": "classes.id"}
+      ]
+    },
+    "schedules": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "class_id", "type": "int", "not_null": true, "foreign_key": "classes.id"},
+        {"name": "start_date", "type": "date", "not_null": true},
+        {"name": "end_date", "type": "date", "not_null": true},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "schedule_entries": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "schedule_id", "type": "int", "not_null": true, "foreign_key": "schedules.id"},
+        {"name": "curriculum_topic_id", "type": "int", "not_null": true, "foreign_key": "curriculum_topics.id"},
+        {"name": "start_date", "type": "date", "not_null": true},
+        {"name": "end_date", "type": "date", "not_null": true}
+      ]
+    },
+    "curriculum_outcomes": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "curriculum_topic_id", "type": "int", "not_null": true, "foreign_key": "curriculum_topics.id"},
+        {"name": "outcome", "type": "text", "not_null": true},
+        {"name": "class_id", "type": "int", "foreign_key": "classes.id"}
+      ]
+    },
+    "student_progress": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "curriculum_topic_id", "type": "int", "not_null": true, "foreign_key": "curriculum_topics.id"},
+        {"name": "grade_id", "type": "int", "not_null": true, "foreign_key": "grades.id"},
+        {"name": "status", "type": "enum", "values": ["not_started", "in_progress", "completed"], "not_null": true},
+        {"name": "progress_details", "type": "text"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "subject_proficiency": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "subject", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "grade_id", "type": "int", "not_null": true, "foreign_key": "grades.id"},
+        {"name": "proficiency_level", "type": "enum", "values": ["Beginner", "Intermediate", "Proficient", "Advanced"], "not_null": true},
+        {"name": "assessed_at", "type": "timestamp", "not_null": true}
+      ]
+    },
+    "skill_proficiency": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "subject", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "skill_name", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "grade_id", "type": "int", "not_null": true, "foreign_key": "grades.id"},
+        {"name": "proficiency_level", "type": "enum", "values": ["Basic", "Developing", "Proficient", "Mastery"], "not_null": true},
+        {"name": "assessed_at", "type": "timestamp", "not_null": true}
+      ]
+    },
+    "learning_preferences": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "learning_style", "type": "enum", "values": ["Visual", "Auditory", "Kinesthetic", "Reading/Writing"], "not_null": true},
+        {"name": "preferred_activities", "type": "text"}
+      ]
+    },
+    "tasks": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "title", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "description", "type": "text"},
+        {"name": "assigned_date", "type": "date", "not_null": true},
+        {"name": "due_date", "type": "date", "not_null": true},
+        {"name": "curriculum_topic_id", "type": "int", "not_null": true, "foreign_key": "curriculum_topics.id"}
+      ]
+    },
+    "completed_tasks": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "task_id", "type": "int", "not_null": true, "foreign_key": "tasks.id"},
+        {"name": "completed_date", "type": "date", "not_null": true},
+        {"name": "feedback", "type": "text"},
+        {"name": "assessed_by", "type": "int", "foreign_key": "admin.id"}
+      ]
+    },
+    "quizzes": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "title", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "description", "type": "text"},
+        {"name": "curriculum_topic_id", "type": "int", "not_null": true, "foreign_key": "curriculum_topics.id"},
+        {"name": "created_date", "type": "date", "not_null": true}
+      ]
+    },
+    "quiz_questions": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "quiz_id", "type": "int", "not_null": true, "foreign_key": "quizzes.id"},
+        {"name": "question_text", "type": "text", "not_null": true},
+        {"name": "question_type", "type": "enum", "values": ["multiple_choice", "short_answer", "true_false"], "not_null": true},
+        {"name": "options", "type": "json"},
+        {"name": "correct_answer", "type": "text"}
+      ]
+    },
+    "student_quiz_results": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "quiz_id", "type": "int", "not_null": true, "foreign_key": "quizzes.id"},
+        {"name": "score", "type": "int", "not_null": true},
+        {"name": "completed_date", "type": "date", "not_null": true},
+        {"name": "feedback", "type": "text"}
+      ]
+    },
+    "interactive_sessions": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "mentor_id", "type": "int", "foreign_key": "admin.id"},
+        {"name": "session_type", "type": "enum", "values": ["individual", "paired", "group", "class"], "not_null": true},
+        {"name": "participant_ids", "type": "json", "not_null": true},
+        {"name": "session_date", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "duration", "type": "int", "not_null": true},
+        {"name": "session_notes", "type": "text"},
+        {"name": "topic", "type": "varchar", "length": 255}
+      ]
+    },
+    "groups": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "name", "type": "varchar", "length": 255, "not_null": true},
+        {"name": "description", "type": "text"},
+        {"name": "created_by", "type": "int", "not_null": true, "foreign_key": "admin.id"},
+        {"name": "created_date", "type": "date", "not_null": true}
+      ]
+    },
+    "task_assignments": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "task_id", "type": "int", "not_null": true, "foreign_key": "tasks.id"},
+        {"name": "student_id", "type": "int", "foreign_key": "students.id"},
+        {"name": "group_id", "type": "int", "foreign_key": "groups.id"},
+        {"name": "assigned_by", "type": "int", "not_null": true, "foreign_key": "admin.id"},
+        {"name": "assigned_date", "type": "date", "not_null": true},
+        {"name": "due_date", "type": "date", "not_null": true}
+      ]
+    },
+    "quiz_assignments": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "quiz_id", "type": "int", "not_null": true, "foreign_key": "quizzes.id"},
+        {"name": "student_id", "type": "int", "foreign_key": "students.id"},
+        {"name": "group_id", "type": "int", "foreign_key": "groups.id"},
+        {"name": "assigned_by", "type": "int", "not_null": true, "foreign_key": "admin.id"},
+        {"name": "assigned_date", "type": "date", "not_null": true},
+        {"name": "due_date", "type": "date", "not_null": true}
+      ]
+    },
+    "group_members": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "group_id", "type": "int", "not_null": true, "foreign_key": "groups.id"},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"}
+      ]
+    },
+    "feedback": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "feedback_text", "type": "text", "not_null": true},
+        {"name": "given_by", "type": "int", "not_null": true, "foreign_key": "admin.id"},
+        {"name": "given_to", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "goal_setting_sessions": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "student_id", "type": "int", "not_null": true, "foreign_key": "students.id"},
+        {"name": "goal", "type": "text", "not_null": true},
+        {"name": "session_date", "type": "date", "not_null": true},
+        {"name": "target_date", "type": "date", "not_null": true},
+        {"name": "progress", "type": "text"},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "notifications": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "notification_text", "type": "text", "not_null": true},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "user_notifications": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "user_id", "type": "int", "not_null": true, "foreign_key": "admin.id"},
+        {"name": "notification_id", "type": "int", "not_null": true, "foreign_key": "notifications.id"},
+        {"name": "read_status", "type": "boolean", "not_null": true},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"}
+      ]
+    },
+    "available_materials": {
+      "columns": [
+        {"name": "id", "type": "int", "primary_key": true, "auto_increment": true},
+        {"name": "hub_id", "type": "int", "foreign_key": "learning_hubs.id"},
+        {"name": "mentor_id", "type": "int", "foreign_key": "admin.id"},
+        {"name": "materials", "type": "json", "not_null": true},
+        {"name": "created_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP"},
+        {"name": "updated_at", "type": "timestamp", "default": "CURRENT_TIMESTAMP", "on_update": "CURRENT_TIMESTAMP"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,62 @@
+```yaml
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: Mentor Registration API
+  description: API documentation for mentor registration operations
+basePath: /app
+tags:
+  - name: Mentor
+    description: Operations related to mentors
+paths:
+  /admin/mentor-register:
+    post:
+      summary: Register a new mentor
+      description: Register a new mentor with necessary details
+      tags:
+        - Mentor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: johndoe@example.com
+                expertise:
+                  type: string
+                  example: Web Development
+                bio:
+                  type: string
+                  example: Experienced mentor in frontend technologies
+      responses:
+        '201':
+          description: Mentor registered successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Mentor registered successfully
+        '400':
+          description: Bad Request
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Email already exists
+        '500':
+          description: Internal Server Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Mentor registration failed
+```  

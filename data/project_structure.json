@@ -1,0 +1,86 @@
+{
+  "root": {
+    ".": [
+      ".env",
+      "combined.log",
+      "error.log",
+      "jest.config.js",
+      "package-lock.json",
+      "package.json",
+      "runSeeder.js",
+      "sophia-personalised-learning-firebase-adminsdk-dxnx1-eac359f2dc.json"
+    ],
+    "sophia-backend": {
+      ".": [
+        ".gitignore",
+        "checkDatabaseConnection.js",
+        "combined.log",
+        "error.log",
+        "package-lock.json",
+        "package.json",
+        "README.md",
+        "server.js",
+        "swagger.json"
+      ],
+      "config": [
+        "database.js",
+        "{environment}/"
+      ],
+      "controllers": [
+        "adminController.js",
+        "authController.js",
+        "emailVerificationController.js"
+      ],
+      "docs": [],
+      "middleware": {
+        "errorHandling": ["errorHandler.js"],
+        "security": ["authenticateJWT.js", "sanitizeAllInputs.js"],
+        "validation": ["checkEmailUniqueness.js", "checkUniqueEmail.js", "validateInputs.js"]
+      },
+      "models": [
+        "index.js",
+      ],
+      "routes": [
+        "adminRoutes.js",
+        "authRoutes.js",
+        "emailVerificationRoutes.js",
+        "protectedRoutes.js"
+      ],
+      "scripts": ["sync.js"],
+      "seeders": [
+        "seedEmailRegistered.js",
+        "seedRegisterHubSupervisor.js",
+        "seedUser.js"
+      ],
+      "services": ["adminService.js"],
+      "utils": {
+        "dbUtils": ["checkUnique.js", "dbUtils.js"],
+        "errors": ["errorUtils.js"],
+        "firebase": ["firebaseUtils.js"],
+        "logging": ["logger.js"],
+        "pagination": [],
+        "rateLimiting": ["rateLimiter.js"],
+        "sanitization": [],
+        "validation": ["checkEmailUnique.js", "validator.js"]
+      }
+    },
+    "sophia-frontend": {
+    },
+    "tests": {
+      ".": [
+        "combined.log",
+        "error.log",
+        "jest.setup.js",
+        "package-lock.json",
+        "package.json"
+      ],
+      "controllers": ["adminRegister.test.js"],
+      "rateLimiting": ["rateLimit.test.js"],
+      "utils": [
+        "axiosInstance.js",
+        "deleteFirebaseUserByEmail.js",
+        "rateLimitUserData.json"
+      ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+version: '3'
+services:
+  ai-agent:
+    build: .
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+    command: ["python", "src/main.py"]
+
+  test:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - PYTHONPATH=/app
+    command: pytest tests/
+
+volumes:
+  pip_cache:
